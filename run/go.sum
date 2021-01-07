@@ -1,0 +1,7 @@
+github.com/justsocialapps/assert v0.0.0-20170124192857-c78644921ea5/go.mod h1:2RyFGw5PZNd2nj35cYEueqNo+7PonWPyHSfqwTXHBVU=
+github.com/justsocialapps/justlib v0.0.0-20170914125756-0712b4c48a88 h1:1mAO8OgCf2TT84HmapRM98zUIzHMsH4ToNpt0rSKNXs=
+github.com/justsocialapps/justlib v0.0.0-20170914125756-0712b4c48a88/go.mod h1:ymT5HMlddcowg3BtNismLttEzqOmtqehguwcvS6QN4Q=
+github.com/makkes/judo v0.0.0-20170914143409-82446840f3d3 h1:A/LeIPlogGvIwj8l2FMSflqwWucpzM3XfJjQVKQBcUQ=
+github.com/makkes/judo v0.0.0-20170914143409-82446840f3d3/go.mod h1:DKXkfdY4+MGJ83fgrOy9wY5OSi/27IIcWOVh/mhEoJU=
+gopkg.in/justsocialapps/justlib.v1 v1.0.0-20170914134905-78d7320d066b h1:/2dBoGIRH3Tg2FX1T6WXyLGqs+YVf2r7oyVeqVdui8U=
+gopkg.in/justsocialapps/justlib.v1 v1.0.0-20170914134905-78d7320d066b/go.mod h1:1NMwQpJIq9MwoDhj+Pi50fHujvu5FTNJvEgv2USSKfk=
