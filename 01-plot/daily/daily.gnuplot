@@ -10,4 +10,5 @@ set xlabel "day"
 set style fill solid
 set boxwidth 0.5 relative
 set xtics rotate 86400
-plot "daily.csv" using 1:2 with boxes
+plot "daily.csv" using 1:2 with boxes,\
+     "daily.csv" using 1:2:2 with labels
