@@ -60,8 +60,12 @@ func dispatchPlotters() {
 func main() {
 	quitCh := make(chan struct{})
 
-	go dispatchPlotters()
-	go gatherValues(os.Args[1])
+	switch os.Args[1] {
+	case "plot":
+		go dispatchPlotters()
+	case "gather":
+		go gatherValues(os.Args[2])
+	}
 
 	<-quitCh
 }
