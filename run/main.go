@@ -38,6 +38,21 @@ func plotDaily() {
 	}
 }
 
+func plotHours() {
+	ticker := time.Tick(1 * time.Hour)
+	for {
+		_, sigCh := process.Start("./plot.sh", nil, "../01-plot/hours")
+		res := <-sigCh
+		if res.Err != nil {
+			fmt.Fprintf(os.Stderr, "error plotting hourly graph: %s\n", res.Err)
+		}
+		if res.ExitCode != 0 {
+			fmt.Fprintf(os.Stderr, "error plotting hourly graph: exit status %d\n", res.ExitCode)
+		}
+		<-ticker
+	}
+}
+
 func gatherValues(baseVal string) {
 	_, sigCh := process.Start("./capture.sh", []string{baseVal}, "../00-capture")
 	res := <-sigCh
