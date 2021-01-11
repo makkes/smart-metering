@@ -1,4 +1,4 @@
-set term png
+set term png size 800,600
 set output "../02-out/chart.png"
 set key autotitle columnhead
 set datafile separator ","
