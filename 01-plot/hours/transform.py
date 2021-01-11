@@ -28,4 +28,7 @@ for dh in date_hours:
 
 print("hour,average usage")
 for hour in range(24):
-    print("{},{}".format(hour, reduce(lambda acc, x: acc + x, hours[hour]) / len(hours[hour])))
+    if hours[hour] is None:
+        print("{},{}".format(hour, 0))
+    else:
+        print("{},{}".format(hour, reduce(lambda acc, x: acc + x, hours[hour]) / len(hours[hour])))
