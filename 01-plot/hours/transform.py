@@ -1,6 +1,7 @@
 from datetime import datetime
 from functools import reduce
 import csv
+import sys
 
 date_hours = {}
 with open('../meter.csv', newline='') as f:
@@ -11,24 +12,21 @@ with open('../meter.csv', newline='') as f:
         date_hour = int(datetime.strptime(datetime.strptime(row[0], "%x %X").strftime("%x %H"), "%x %H").timestamp())
         val = float(row[1])
         if date_hour not in date_hours:
-            date_hours[date_hour] = [val]
+            date_hours[date_hour] = [0, val]
         else:
-            date_hours[date_hour].append(val)
+            date_hours[date_hour][0] = val - date_hours[date_hour][1]
     
 hours = [None] * 24
 for dh in date_hours:
-    delta = date_hours[dh][len(date_hours[dh]) - 1] - date_hours[dh][0]
-    if delta == 0:
-        continue
     hour = datetime.fromtimestamp(dh).hour
     if hours[hour] is None:
-        hours[hour] = [delta]
+        hours[hour] = [date_hours[dh][0]]
     else:
-        hours[hour].append(delta)
+        hours[hour].append(date_hours[dh][0])
 
-print("hour,average usage")
+print("hour,usage")
 for hour in range(24):
     if hours[hour] is None:
         print("{},{}".format(hour, 0))
     else:
-        print("{},{}".format(hour, reduce(lambda acc, x: acc + x, hours[hour]) / len(hours[hour])))
+        print("{},{:.2f}".format(hour, reduce(lambda acc, x: acc + x, hours[hour]) / len(hours[hour])))
