@@ -7,10 +7,10 @@ set timefmt "%m/%d/%y"
 set format x "%m/%d/%y"
 set ylabel "°C"
 set xlabel "day"
-set xtics rotate 604800
-#set xtics rotate 86400
+#set xtics rotate 604800
+set xtics rotate 86400
 set ytics 1
 set grid ytics
 set style fill transparent solid 0.4 noborder
-plot "temps.csv" using 1:3:4 with filledcurves lt rgb "#9BFA98" title "min/max",\
-     "temps.csv" using 1:2 with lines lt rgb "#98A8FA"
+plot "< tail -n${DAYS} temps.csv" using 1:3:4 with filledcurves lt rgb "#9BFA98" title "min/max",\
+     "< tail -n${DAYS} temps.csv" using 1:2 with lines lt rgb "#98A8FA" title "avg"
