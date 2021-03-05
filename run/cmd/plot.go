@@ -26,7 +26,7 @@ func plot(dir string) {
 }
 
 func dispatchPlotters(out io.Writer) error {
-	ticker := time.Tick(5 * time.Second)
+	ticker := time.Tick(10 * time.Minute)
 	var wg sync.WaitGroup
 	for {
 		fmt.Fprintf(out, "[%s] plotting graphs\n", time.Now().Format(time.RFC3339))
