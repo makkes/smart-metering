@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	rootCmd.AddCommand(gatherCommand)
+	rootCmd.AddCommand(NewGatherCommand())
 	rootCmd.AddCommand(plotCommand)
 
 	if err := rootCmd.Execute(); err != nil {
