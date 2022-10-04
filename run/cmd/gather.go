@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/makkes/judo/process"
 	"github.com/spf13/cobra"
 )
 
-func NewGatherCommand() *cobra.Command {
+func NewGatherCommand(basedir string) *cobra.Command {
 	var dummyFlag bool
 	cmd := &cobra.Command{
 		Use:   "gather BASE_VALUE",
@@ -22,7 +23,7 @@ func NewGatherCommand() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("could not lookup python3 path: %w", err)
 			}
-			out, err := os.OpenFile("../01-plot/meter.csv", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0640)
+			out, err := os.OpenFile(filepath.Join(basedir, "01-plot", "meter.csv"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0640)
 			if err != nil {
 				return fmt.Errorf("could not open log file: %w", err)
 			}
@@ -30,7 +31,7 @@ func NewGatherCommand() *cobra.Command {
 			if dummyFlag {
 				argv = append(argv, "DUMMY")
 			}
-			_, sigCh := process.Start(p, argv, "../00-capture", out)
+			_, sigCh := process.Start(p, argv, filepath.Join(basedir, "00-capture"), out)
 			res := <-sigCh
 			if res.Err != nil {
 				return fmt.Errorf("error gathering values: %w", res.Err)

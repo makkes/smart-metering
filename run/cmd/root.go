@@ -15,7 +15,7 @@ func Execute() {
 
 	var baseDirFlag string
 
-	rootCmd.AddCommand(NewGatherCommand())
+	rootCmd.AddCommand(NewGatherCommand(&baseDirFlag))
 	rootCmd.AddCommand(NewPlotCommand(&baseDirFlag))
 
 	wd, err := os.Getwd()
