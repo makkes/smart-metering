@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 
@@ -12,8 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func plot(dir string) {
-	_, sigCh := process.Start("./plot.sh", nil, dir, os.Stdout)
+func plot(dir string, days int) {
+	_, sigCh := process.Start("./plot.sh", []string{strconv.Itoa(days)}, dir, os.Stdout)
 	res := <-sigCh
 	if res.Err != nil {
 		fmt.Fprintf(os.Stderr, "error plotting graph in %s: %s\n", dir, res.Err)
@@ -25,12 +26,12 @@ func plot(dir string) {
 	}
 }
 
-func dispatchPlotters(out io.Writer) error {
+func dispatchPlotters(out io.Writer, days int, basedir string) error {
 	ticker := time.Tick(10 * time.Minute)
 	var wg sync.WaitGroup
 	for {
 		fmt.Fprintf(out, "[%s] plotting graphs\n", time.Now().Format(time.RFC3339))
-		if err := filepath.Walk("../01-plot", func(path string, info os.FileInfo, err error) error {
+		if err := filepath.Walk(filepath.Join(basedir, "01-plot"), func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return fmt.Errorf("error walking plot dir: %w", err)
 			}
@@ -38,7 +39,7 @@ func dispatchPlotters(out io.Writer) error {
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
-					plot(path)
+					plot(path, days)
 				}()
 				wg.Wait()
 			}
@@ -51,11 +52,17 @@ func dispatchPlotters(out io.Writer) error {
 	}
 }
 
-var plotCommand = &cobra.Command{
-	Use:   "plot",
-	Short: "plot all graphs from gathered data",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		dispatchPlotters(cmd.OutOrStdout())
-		return nil
-	},
+func NewPlotCommand(basedirFlag *string) *cobra.Command {
+	var days int
+	cmd := &cobra.Command{
+		Use:   "plot",
+		Short: "plot all graphs from gathered data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return dispatchPlotters(cmd.OutOrStdout(), days, *basedirFlag)
+		},
+	}
+
+	cmd.Flags().IntVar(&days, "days", 30, "number of days to plot")
+
+	return cmd
 }
