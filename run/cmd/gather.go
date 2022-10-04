@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewGatherCommand(basedir string) *cobra.Command {
+func NewGatherCommand(basedirFlag *string) *cobra.Command {
 	var dummyFlag bool
 	cmd := &cobra.Command{
 		Use:   "gather BASE_VALUE",
@@ -23,7 +23,7 @@ func NewGatherCommand(basedir string) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("could not lookup python3 path: %w", err)
 			}
-			out, err := os.OpenFile(filepath.Join(basedir, "01-plot", "meter.csv"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0640)
+			out, err := os.OpenFile(filepath.Join(*basedirFlag, "01-plot", "meter.csv"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0640)
 			if err != nil {
 				return fmt.Errorf("could not open log file: %w", err)
 			}
@@ -31,7 +31,7 @@ func NewGatherCommand(basedir string) *cobra.Command {
 			if dummyFlag {
 				argv = append(argv, "DUMMY")
 			}
-			_, sigCh := process.Start(p, argv, filepath.Join(basedir, "00-capture"), out)
+			_, sigCh := process.Start(p, argv, filepath.Join(*basedirFlag, "00-capture"), out)
 			res := <-sigCh
 			if res.Err != nil {
 				return fmt.Errorf("error gathering values: %w", res.Err)
