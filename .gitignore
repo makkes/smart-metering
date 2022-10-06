@@ -1,6 +1,4 @@
 /run/smartmeter
-/02-out/*.png
-/01-plot/**/*.csv
 __pycache__
 /ingester/dist/
 .envrc
