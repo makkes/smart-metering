@@ -1,0 +1,12 @@
+autopep8==1.7.0
+build==0.8.0
+-e git+ssh://git@github.com/makkes/smart-metering.git@06fd21fe953d0d4d449129029828afad87545911#egg=ingester&subdirectory=ingester
+inotify==0.2.10
+nose==1.3.7
+packaging==21.3
+pep517==0.13.0
+psycopg2-binary==2.9.3
+pycodestyle==2.9.1
+pyparsing==3.0.9
+toml==0.10.2
+tomli==2.0.1

@@ -1,0 +1,12 @@
+[project]
+name = "ingester"
+version = "0.0.1"
+authors = [
+    { name = "Max Jonas Werner", email="max@e13.dev" },
+]
+description = "ingest CSV data from smart meters into an SQL database"
+requires-python = ">=3.10.4"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
