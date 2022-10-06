@@ -1,17 +1,53 @@
 #!/usr/bin/env python
 
-import ingester
-from urllib import request
+import argparse
 import os
+import sys
+from urllib import request
+import shutil
 
-readings_url = os.getenv("READINGS_URL")
-(fname, _) = request.urlretrieve(readings_url)
-print(f"{fname}")
+import ingester, ingester.weather
 
-print(f"processing CSV file...")
-conn = ingester.init_db_conn(os.getenv("DB_HOST"), os.getenv(
-    "DB_PORT"), os.getenv("DB_NAME"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"))
-ingester.prepare_tables(conn)
-ingester.ingest(fname, conn)
-ingester.update_per_day_consumption(conn)
-conn.close()
+
+def weather():
+    print("ingesting weather data")
+    conn = ingester.init_db_conn(os.getenv("DB_HOST"), os.getenv(
+        "DB_PORT"), os.getenv("DB_NAME"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"))
+    ingester.weather.prepare_tables(conn)
+    data_file = ingester.weather.fetch_data()
+    try:
+        ingester.weather.insert_temps(data_file, conn)
+    finally:
+        print(f"removing {data_file}")
+        shutil.rmtree(os.path.dirname(data_file))
+    
+
+
+def readings():
+    readings_url = os.getenv("READINGS_URL")
+    (fname, _) = request.urlretrieve(readings_url)
+    print(f"{fname}")
+
+    print(f"processing CSV file...")
+    conn = ingester.init_db_conn(os.getenv("DB_HOST"), os.getenv(
+        "DB_PORT"), os.getenv("DB_NAME"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"))
+    ingester.prepare_tables(conn)
+    ingester.ingest(fname, conn)
+    ingester.update_per_day_consumption(conn)
+    conn.close()
+
+
+parser = argparse.ArgumentParser(description="test")
+sub_parsers = parser.add_subparsers(dest="command")
+sub_parsers.add_parser("weather", help="ingest weather data")
+sub_parsers.add_parser(
+    "readings", help="ingest most recent readings from sensor")
+args = parser.parse_args()
+
+match args.command:
+    case "weather":
+        weather()
+    case "readings":
+        readings()
+    case _:
+        sys.exit(f"unknown command {args.command}")
