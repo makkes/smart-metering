@@ -26,4 +26,4 @@ WORKDIR app
 
 COPY bin/ingester .
 
-CMD ["/app/ingester"]
+ENTRYPOINT ["/app/ingester"]
