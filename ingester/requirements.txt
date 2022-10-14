@@ -1,6 +1,6 @@
 autopep8==1.7.0
 build==0.8.0
--e git+ssh://git@github.com/makkes/smart-metering.git@8d40fcfe7eb1fc3a4c7ed128a57afd5cacb9316a#egg=ingester&subdirectory=ingester
+-e https://github.com/makkes/smart-metering.git@8d40fcfe7eb1fc3a4c7ed128a57afd5cacb9316a#egg=ingester&subdirectory=ingester
 nose==1.3.7
 packaging==21.3
 pep517==0.13.0
