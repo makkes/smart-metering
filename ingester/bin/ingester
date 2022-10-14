@@ -26,6 +26,12 @@ def weather():
         shutil.rmtree(os.path.dirname(data_file))
 
 
+def bootstrap():
+    db = ingester.database.DB(os.getenv("DB_HOST"), os.getenv("DB_PORT"), os.getenv(
+        "DB_NAME"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"))
+    db.init_version_table()
+
+
 def readings():
     readings_url = os.getenv("READINGS_URL")
     (fname, _) = request.urlretrieve(readings_url)
@@ -46,6 +52,8 @@ sub_parsers = parser.add_subparsers(dest="command")
 sub_parsers.add_parser("weather", help="ingest weather data")
 sub_parsers.add_parser(
     "readings", help="ingest most recent readings from sensor")
+sub_parsers.add_parser(
+    "bootstrap", help="bootstrap the database. Must be run before any other commands.")
 args = parser.parse_args()
 
 match args.command:
@@ -53,5 +61,7 @@ match args.command:
         weather()
     case "readings":
         readings()
+    case "bootstrap":
+        bootstrap()
     case _:
         sys.exit(f"unknown command {args.command}")
