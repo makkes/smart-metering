@@ -1,25 +1,20 @@
 import csv
 import os
 import tempfile
-import time
 from io import BytesIO
 from urllib.request import urlopen
 from zipfile import ZipFile
-
 import psycopg2
 
+from . import database
 
-def prepare_tables(conn):
-    tables = {
-        "temperatures": "CREATE TABLE temperatures(day DATE NOT NULL, min NUMERIC(3,1) NOT NULL, max NUMERIC(3,1) NOT NULL, avg NUMERIC(3,1) NOT NULL, PRIMARY KEY(day))",
-    }
-    with conn.cursor() as cur:
-        for name, ddl in tables.items():
-            cur.execute(
-                "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = %s", (name,))
-            res = cur.fetchone()
-            if res[0] != 1:
-                cur.execute(ddl)
+
+def prepare_tables(db):
+    migration = database.Migration("weather", [
+        "CREATE TABLE temperatures(day DATE NOT NULL, min NUMERIC(3,1) NOT NULL, max NUMERIC(3,1) NOT NULL, avg NUMERIC(3,1) NOT NULL, PRIMARY KEY(day))",
+        "ALTER TABLE temperatures ADD COLUMN precipitation NUMERIC(3,1)",
+    ])
+    db.migrate(migration)
 
 
 def fetch_data():
@@ -48,15 +43,16 @@ def insert_temps(data_file, db_conn):
                 idxs["max"] = idx
             elif hname == "TNK":
                 idxs["min"] = idx
+            elif hname == "RSK":
+                idxs["precipitation"] = idx
         with db_conn.cursor() as cur:
             for row in r:
                 date = row[idxs["date"]].strip()
                 avg_t = float(row[idxs["avg"]].strip())
                 min_t = float(row[idxs["min"]].strip())
                 max_t = float(row[idxs["max"]].strip())
-                try:
-                    cur.execute(
-                        "INSERT INTO temperatures(day, min, max, avg) VALUES(%s, %s, %s, %s)", (date, min_t, max_t, avg_t))
-                    print(f"inserted ({date}, {min_t}, {avg_t}, {max_t})")
-                except psycopg2.errors.UniqueViolation:
-                    pass
+                preci = float(row[idxs["precipitation"]].strip())
+                cur.execute(
+                    "INSERT INTO temperatures(day, min, max, avg, precipitation) VALUES(%(day)s, %(min)s, %(max)s, %(avg)s, %(precipitation)s) ON CONFLICT (day) DO UPDATE SET min = %(min)s, max = %(max)s, avg = %(avg)s, precipitation = %(precipitation)s", {"day": date, "min": min_t, "max": max_t, "avg": avg_t, "precipitation": preci})
+                print(
+                    f"inserted ({date}, {min_t}, {avg_t}, {max_t}, {preci})")

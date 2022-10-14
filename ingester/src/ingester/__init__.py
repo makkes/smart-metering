@@ -1,11 +1,5 @@
 import csv
 import psycopg2
-from collections import defaultdict
-
-def init_db_conn(host, port, dbname, user, password):
-    conn = psycopg2.connect(f"host={host} port={port} dbname={dbname} user={user} password={password}")
-    conn.set_session(autocommit=True)
-    return conn
 
 def prepare_tables(conn):
     tables = {
@@ -48,7 +42,7 @@ def update_per_day_consumption(conn):
     res = cur.fetchall()
     for single_reading in res:
         day = single_reading[0].date()
-        if day < start_day:
+        if start_day is not None and day < start_day:
             continue
         try:
             pdc = per_day_consumption[day]
