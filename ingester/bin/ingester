@@ -20,6 +20,8 @@ def weather():
     try:
         conn = db.connect()
         ingester.weather.insert_temps(data_file, conn)
+    except Exception as e:
+        print(f"error: {e}", file=sys.stderr)
     finally:
         conn.close()
         print(f"removing {data_file}")
