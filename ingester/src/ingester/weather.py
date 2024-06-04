@@ -59,6 +59,8 @@ def insert_temps(data_file, db_conn):
                 if max_t == -999:
                     max_t = None
                 preci = float(row[idxs["precipitation"]].strip())
+                if preci == -999:
+                    preci = None
                 print(
                     f"inserting ({date}, {min_t}, {avg_t}, {max_t}, {preci})")
                 cur.execute(
