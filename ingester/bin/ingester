@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import logging
 import os
 import sys
 from urllib import request
@@ -37,9 +38,9 @@ def bootstrap():
 def readings():
     readings_url = os.getenv("READINGS_URL")
     (fname, _) = request.urlretrieve(readings_url)
-    print(f"{fname}")
+    logging.info(fname)
 
-    print(f"processing CSV file...")
+    logging.info("processing CSV file...")
     db = ingester.database.DB(os.getenv("DB_HOST"), os.getenv(
         "DB_PORT"), os.getenv("DB_NAME"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"))
     conn = db.connect()
@@ -49,6 +50,7 @@ def readings():
     conn.close()
 
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 parser = argparse.ArgumentParser(description="test")
 sub_parsers = parser.add_subparsers(dest="command")
 sub_parsers.add_parser("weather", help="ingest weather data")
