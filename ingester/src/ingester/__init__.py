@@ -25,7 +25,6 @@ def ingest(f, conn):
                 print("inserted reading ({}, {})".format(row[0], row[1]))
             except psycopg2.errors.UniqueViolation:
                 pass
-    cur.execute("SELECT * FROM gas;")
     cur.close()
 
 def update_per_day_consumption(conn):
