@@ -38,16 +38,17 @@ def bootstrap():
 def readings():
     readings_url = os.getenv("READINGS_URL")
     (fname, _) = request.urlretrieve(readings_url)
-    logging.info(fname)
 
     logging.info("processing CSV file...")
     db = ingester.database.DB(os.getenv("DB_HOST"), os.getenv(
         "DB_PORT"), os.getenv("DB_NAME"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"))
-    conn = db.connect()
-    ingester.prepare_tables(conn)
-    ingester.ingest(fname, conn)
-    ingester.update_per_day_consumption(conn)
-    conn.close()
+    with db.connect(autocommit=False) as conn:
+        logging.info("preparing tables")
+        ingester.prepare_tables(conn)
+        logging.info("ingesting data")
+        ingester.ingest(fname, conn)
+        logging.info("updating per day consumption")
+        ingester.update_per_day_consumption(conn)
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
